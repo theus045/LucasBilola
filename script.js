@@ -66,7 +66,7 @@ if (userLogado) {
         if (!dados.inventario) { dados.inventario = []; modificado = true; }
         if (!dados.armasCompradas) { dados.armasCompradas = []; modificado = true; }
         if (!dados.vidaCorpo) { 
-            dados.vidaCorpo = { cabeca:{atual:10, max:10}, torso:{atual:20, max:20}, bracoDir:{atual:10, max:10}, bracoEsq:{atual:10, max:10}, pernaDir:{atual:10, max:10}, pernaEsq:{atual:10, max:10} }; 
+            dados.vidaCorpo = { cabeca:{atual:10, max:12}, torso:{atual:20, max:25}, bracoDir:{atual:10, max:15}, bracoEsq:{atual:10, max:15}, pernaDir:{atual:10, max:15}, pernaEsq:{atual:10, max:15} }; 
             modificado = true; 
         }
         if (!dados.statusMentais) { 
