@@ -397,15 +397,14 @@
         }
 
         function alterarMental(t, v) { 
-    let x = dados.statusMentais[t]; 
-    x.atual += v;
-    
-    if (x.atual < -50) x.atual = zx.max;
-    if (x.atual > x.max) x.atual = x.max;
-    
-    salvar(); 
-    atualizarTela(); 
-}
+            let x = dados.statusMentais[t]; 
+            x.atual += v;
+            if (x.atual < 0) x.atual = 0;
+            if (x.atual > x.max) x.atual = x.max;
+            salvar(); 
+            atualizarTela(); 
+        }
+
         }
 
         function alterarDinheiro(s) { 
