@@ -397,13 +397,18 @@
         }
 
         function alterarMental(t, v) { 
-            let x = dados.statusMentais[t]; 
-            x.atual += v;
-            if (x.atual < 0) x.atual = 0;
-            if (x.atual > x.max) x.atual = x.max;
-            salvar(); 
-            atualizarTela(); 
-        }
+    let x = dados.statusMentais[t]; 
+    x.atual += v;
+
+    // Antes era: if (x.atual < 0) x.atual = 0;
+    // Agora usamos o valor dinâmico que definimos no carregamento:
+    if (x.atual < x.min) x.atual = x.min; 
+
+    if (x.atual > x.max) x.atual = x.max;
+
+    salvar(); 
+    atualizarTela(); 
+}
 
         }
 
