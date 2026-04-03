@@ -29,16 +29,16 @@ if (loginForm) {
                 // CORREÇÃO: Estrutura de dados completa para evitar bugs no painel
                 const novoPlayer = {
                     senha: passIn,
-                    dinheiro: 1500, // Ajustado para dar poder de compra inicial no RPG
+                    dinheiro: 0, // Ajustado para dar poder de compra inicial no RPG
                     inventario: [],
                     armasCompradas: [],
                     vidaCorpo: {
-                        cabeca: { atual: 10, max: 10 },
-                        torso: { atual: 20, max: 20 },
-                        bracoDir: { atual: 10, max: 10 },
-                        bracoEsq: { atual: 10, max: 10 },
-                        pernaDir: { atual: 10, max: 10 },
-                        pernaEsq: { atual: 10, max: 10 }
+                        cabeca: { atual: 12, max: 10 },
+                        torso: { atual: 25, max: 20 },
+                        bracoDir: { atual: 15, max: 10 },
+                        bracoEsq: { atual: 15, max: 10 },
+                        pernaDir: { atual: 15, max: 10 },
+                        pernaEsq: { atual: 15, max: 10 }
                     },
                     statusMentais: { 
                         sanidade: { atual: 20, max: 20 }, 
