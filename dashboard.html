@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG - Sistema de Arsenal Pro</title>
+    <link rel="stylesheet" href="body.css">
+    <style>
+        /* --- ESTILIZAÇÃO DOS NOVOS BOTÕES E LAYOUT --- */
+        
+        .mental-container {
+            position: absolute;
+            right: -150px;
+            top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 5;
+        }
+
+        .char-container {
+            overflow: visible !important;
+        }
+
+        /* Botão de Condições */
+        .btn-toggle {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+            color: #ffd700;
+            border: 1px solid #ffd700;
+            border-radius: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .btn-toggle:hover {
+            background: #ffd700;
+            color: #000;
+        }
+
+        .conteudo-condicoes {
+            display: none;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 10px;
+            border: 1px dashed #444;
+            margin-bottom: 20px;
+        }
+
+        /* Botões de Sistema (Resetar e Sair) */
+        .sistema-controls {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-reset, .btn-sair {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        .btn-reset {
+            background: #444;
+            color: #fff;
+            border: 1px solid #666;
+        }
+
+        .btn-reset:hover {
+            background: #ffd700;
+            color: #000;
+            border-color: #000;
+        }
+
+        .btn-sair {
+            background: linear-gradient(135deg, #b32d2d, #7a1a1a);
+            color: white;
+            box-shadow: 0 4px 10px rgba(179, 45, 45, 0.3);
+        }
+
+        .btn-sair:hover {
+            filter: brightness(1.2);
+            transform: translateY(-2px);
+        }
+
+        /* Ajuste do Boneco */
+        .status-label.mental {
+            position: relative;
+            left: 0 !important;
+            top: 0 !important;
+            min-width: 130px;
+            border-style: double;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn-sidebar-toggle btn-mochila" onclick="toggleSidebar('sidebar-mochila')">🎒</button>
+    <button class="btn-sidebar-toggle btn-loja" onclick="toggleSidebar('sidebar-loja')">🛒</button>
+
+    <div id="sidebar-mochila" class="sidebar side-left">
+        <h3 class="sidebar-titulo">Mochila</h3>
+        <div class="tabs-inventario">
+            <button onclick="mudarAba('itens')" id="tab-itens" class="active">Itens</button>
+            <button onclick="mudarAba('armas')" id="tab-armas">Armas</button>
+        </div>
+        
+        <div id="aba-itens" class="conteudo-aba active">
+            <div class="add-item-box">
+                <input type="text" id="novo-item-nome" placeholder="Novo item...">
+                <button onclick="adicionarItem()">+</button>
+            </div>
+            <div id="slots-itens" class="grid-inventario"></div>
+        </div>
+
+        <div id="aba-armas" class="conteudo-aba" style="display: none;">
+            <div id="slots-armas" class="grid-inventario"></div>
+        </div>
+    </div>
+
+    <div id="sidebar-loja" class="sidebar side-right">
+        <h3 class="sidebar-titulo">Mercado Negro</h3>
+        <div class="filtro-loja">
+            <input type="text" id="busca-loja" placeholder="Buscar arma..." onkeyup="filtrarLoja()">
+        </div>
+        <div id="lista-loja" class="loja-lista-vertical"></div>
+    </div>
+
+    <div id="main-content">
+        <h2 class="player-header">Agente: <span id="nome-player">---</span></h2>
+
+        <div class="painel-dinheiro">
+            <div class="dinheiro-display">💰 <span id="v-dinheiro">0</span></div>
+            <div class="dinheiro-controles">
+                <input type="number" id="input-qtd-dinheiro" value="100" min="1">
+                <button onclick="alterarDinheiro(1)" class="btn-ganhar">Ganhar</button>
+                <button onclick="alterarDinheiro(-1)" class="btn-gastar">Gastar</button>
+            </div>
+        </div>
+        
+        <div class="char-container" id="drop-zone">
+            <img src="IMG/Vector-Human-Body-PNG-Photo.png" class="body-image">
+
+            <div id="stat-cabeca" class="status-label" style="top: 20px; left: 110px;">Cab: <span id="v-cabeca">0/0</span><div class="controls"><button onclick="alterarVida('cabeca', 1)">+</button><button onclick="alterarVida('cabeca', -1)">-</button></div></div>
+            <div id="stat-torso" class="status-label" style="top: 150px; left: 110px;">Torso: <span id="v-torso">0/0</span><div class="controls"><button onclick="alterarVida('torso', 1)">+</button><button onclick="alterarVida('torso', -1)">-</button></div></div>
+            <div id="stat-braco-dir" class="status-label" style="top: 120px; left: 10px;">B.Dir: <span id="v-bracoDir">0/0</span><div class="controls"><button onclick="alterarVida('bracoDir', 1)">+</button><button onclick="alterarVida('bracoDir', -1)">-</button></div></div>
+            <div id="stat-braco-esq" class="status-label" style="top: 120px; left: 210px;">B.Esq: <span id="v-bracoEsq">0/0</span><div class="controls"><button onclick="alterarVida('bracoEsq', 1)">+</button><button onclick="alterarVida('bracoEsq', -1)">-</button></div></div>
+            <div id="stat-perna-dir" class="status-label" style="top: 350px; left: 60px;">P.Dir: <span id="v-pernaDir">0/0</span><div class="controls"><button onclick="alterarVida('pernaDir', 1)">+</button><button onclick="alterarVida('pernaDir', -1)">-</button></div></div>
+            <div id="stat-perna-esq" class="status-label" style="top: 350px; left: 160px;">P.Esq: <span id="v-pernaEsq">0/0</span><div class="controls"><button onclick="alterarVida('pernaEsq', 1)">+</button><button onclick="alterarVida('pernaEsq', -1)">-</button></div></div>
+
+            <div class="mental-container">
+                <div id="stat-sanidade" class="status-label mental">San: <span id="v-sanidade">0/0</span><div class="controls"><button onclick="alterarMental('sanidade', 1)">+</button><button onclick="alterarMental('sanidade', -1)">-</button></div></div>
+                <div id="stat-stress" class="status-label mental">Str: <span id="v-stress">0/0</span><div class="controls"><button onclick="alterarMental('stress', 1)">+</button><button onclick="alterarMental('stress', -1)">-</button></div></div>
+                <div id="stat-consciencia" class="status-label mental">Con: <span id="v-consciencia">0/0</span><div class="controls"><button onclick="alterarMental('consciencia', 1)">+</button><button onclick="alterarMental('consciencia', -1)">-</button></div></div>
+            </div>
+        </div>
+
+        <div class="painel-condicoes">
+            <button onclick="toggleCondicoes()" class="btn-toggle">⚠️ Condições de Status</button>
+            <div id="lista-condicoes" class="conteudo-condicoes">
+                <div id="cond-hemorragia" class="status-label condicao">🩸 Hemorragia</div>
+                <div id="cond-quebrado" class="status-label condicao">🦴 Fratura</div>
+                <div id="cond-queimado" class="status-label condicao">🔥 Queimadura</div>
+                <div id="cond-envenenado" class="status-label condicao">🤢 envenenado</div>
+                <div id="cond-decepado" class="status-label condicao">🔪 decepado</div>
+            </div>
+        </div>
+
+        <div class="sistema-controls">
+            <button class="btn-reset" onclick="resetarPosicoes()">Resetar Posições</button>
+            <button class="btn-sair" onclick="sair()">Sair do Sistema</button>
+        </div>
+    </div>
+
+    <script>
+        const usuarioLogado = sessionStorage.getItem("usuarioLogado");
+        if (!usuarioLogado) window.location.href = "index.html";
+
+        const DB_ARMAS = [
+            /* Pistolas */
+            { nome:"Glock 19", preco:750, dano:"D6", capacidade:"15/15", hab:"Permite armazená-la em lugares menores por seu tamanho compacto." },
+            { nome:"Glock 17", preco:860, dano:"D6+2", capacidade:"17/17", hab:"Uma vez por combate, pode rolar o dano duas vezes e escolher o maior." },
+            { nome:"Beretta 92FS", preco:880, dano:"D6+2", capacidade:"15/15", hab:"Ganha +1 de vantagem em acertos consecutivos." },
+            { nome:"CZ 75 SP-01", preco:980, dano:"D6+D3", capacidade:"18/18", hab:"Ao rolar 1 no dano, pode rolar novamente uma vez por turno." },
+            { nome:"Sig Sauer P226", preco:950, dano:"-", capacidade:"15/15", hab:"O primeiro disparo tem chance de causar Hemorragia no alvo (tirar mais do que 16 no D20)." },
+            { nome:"Glock 18", preco:1200, dano:"D8", capacidade:"15/15", hab:"Gasta todo o pente para atacar todos os inimigos em um curto alcance, distribuindo disparos com 1d3." },
+            { nome:"Caixa de munição 9mm", preco:15, dano:"-", capacidade:"32", hab:"Contém 32 munições. Tiro médio." },
+            { nome:"Colt M1911", preco:960, dano:"D6+2", capacidade:"8/8", hab:"Uma vez por combate pode adicionar +2 de dano e +2 de vantagem no próximo disparo." },
+            { nome:".45 ACP", preco:20, dano:"-", capacidade:"32", hab:"Contém 32 munições. Tiro médio." },
+            { nome:"Smith & Wesson Model 686", preco:850, dano:"D6", capacidade:"6/6", hab:"Uma vez por turno pode escolher ter 1 de desvantagem no disparo para aumentar o dano do tiro em 1 dado acima." },
+            { nome:"Ruger GP100", preco:880, dano:"D8", capacidade:"6/6", hab:"Pode rolar novamente o dano uma vez a cada 2 turnos, mas deve aceitar o segundo resultado." },
+            { nome:"Colt Python", preco:1500, dano:"D6+D4", capacidade:"6/6", hab:"Uma vez por combate, pode anular teste e rolar diretamente o dano." },
+            { nome:"Munição .357 magnum", preco:40, dano:"-", capacidade:"12", hab:"Contém 12 munições. Tiro forte." },
+            { nome:"Taurus 85", preco:990, dano:"D6+2", capacidade:"6/6", hab:"No primeiro tiro do combate, você poderá rolar o teste com +2 de vantagem." },
+            { nome:"Munição .38 Special", preco:30, dano:"-", capacidade:"12", hab:"Contém 12 munições. Tiro leve." },
+            { nome:"Desert Eagle", preco:3000, dano:"D12", capacidade:"7/7", hab:"No primeiro tiro tem chance de causar mais D6 de dano por combate (tirar mais de 15 no D20)." },
+            { nome:"Munição .50", preco:65, dano:"-", capacidade:"14", hab:"Contém 14 munições. Tiro forte." },
+
+            /* SMGs */
+            { nome:"MAC-10", preco:2050, dano:"D4 por acerto", capacidade:"32/32", hab:"Pode atacar mais de um inimigo na mesma ação, mas com -2 de precisão." },
+            { nome:"M3", preco:2500, dano:"D4+1 por acerto", capacidade:"30/30", hab:"Se falhar pode rolar de novo, mas o dano é pela metade." },
+            { nome:"UMP45", preco:2800, dano:"D4+D3 por acerto", capacidade:"25/25", hab:"Se causar dano máximo, o alvo perde a próxima ação." },
+            { nome:"Thompson", preco:3000, dano:"D6 por acerto", capacidade:"50/50", hab:"Pode gastar 10 balas para causar dano em todos em uma linha horizontal." },
+            { nome:"Kriss Vector", preco:3300, dano:"D6+D3", capacidade:"25/25", hab:"Os primeiros 5 disparos reduzem 35% do recuo." },
+            { nome:"Mini UZI", preco:1700, dano:"D4", capacidade:"20/20", hab:"Pode ser oculta facilmente e armazenada em lugares menores." },
+            { nome:"UZI", preco:2000, dano:"D4+2", capacidade:"32/32", hab:"Se descobrir a posição correta de segurar, ganha +1 de vantagem durante o combate." },
+            { nome:"URU", preco:2200, dano:"D4+D3", capacidade:"32/32", hab:"Uma vez por combate pode disparar rajada descontrolada com efeitos variados ao rolar 1d6." },
+            { nome:"MP40", preco:2800, dano:"D6", capacidade:"32/32", hab:"Ao entrar em combate rola 1d20 para intimidar, se falhar a arma trava." },
+            { nome:"MP5", preco:2400, dano:"D6+1", capacidade:"30/30", hab:"Se o alvo reconhecer a arma, sofre 1d4+1 a mais a cada tiro." },
+            { nome:"LC10", preco:2999, dano:"D4+D3", capacidade:"34/34", hab:"Reduz penalidade de recuo em rajadas nos primeiros 5 disparos." },
+            { nome:"PP-19 Bizon", preco:2580, dano:"D6", capacidade:"64/64", hab:"Após 4 disparos causa dano de fogo e após 6 também afeta o usuário." },
+            { nome:"LACHMANN SUB", preco:2790, dano:"D6+D4", capacidade:"30/30", hab:"Pode alternar entre modo preciso ou insano afetando recuo e alvos." },
+            { nome:"P90", preco:3800, dano:"D8", capacidade:"50/50", hab:"Todos disparos causam hemorragia e dano máximo causa hemorragia grave." },
+            { nome:"Caixa de munição 5.7x28mm", preco:60, dano:"-", capacidade:"25", hab:"Contém 25 munições. Tiro forte." }
+        ];
+
+        // CORREÇÃO: Recuperação segura que nunca assume que todos os objetos aninhados existem
+        let dadosCarregados = JSON.parse(localStorage.getItem(usuarioLogado));
+        
+        let dados = dadosCarregados || {};
+        
+        // Assegurar fallback seguro para arrays e objetos essenciais
+        if (!dados.dinheiro && dados.dinheiro !== 0) dados.dinheiro = 1500;
+        if (!dados.inventario) dados.inventario = [];
+        if (!dados.armasCompradas) dados.armasCompradas = [];
+        if (!dados.vidaCorpo) dados.vidaCorpo = { cabeca:{atual:10, max:10}, torso:{atual:20, max:20}, bracoDir:{atual:10, max:10}, bracoEsq:{atual:10, max:10}, pernaDir:{atual:10, max:10}, pernaEsq:{atual:10, max:10} };
+        if (!dados.statusMentais) dados.statusMentais = { sanidade:{atual:20, max:20}, stress:{atual:0, max:20}, consciencia:{atual:15, max:15} };
+
+        function salvar() { localStorage.setItem(usuarioLogado, JSON.stringify(dados)); }
+
+        function atualizarTela() {
+            document.getElementById('nome-player').innerText = usuarioLogado;
+            document.getElementById('v-dinheiro').innerText = dados.dinheiro;
+            
+            const categorias = [dados.vidaCorpo, dados.statusMentais];
+            categorias.forEach(cat => {
+                for (let chave in cat) {
+                    const p = cat[chave];
+                    const span = document.getElementById(`v-${chave}`);
+                    if (span) {
+                        span.innerText = `${p.atual}/${p.max}`;
+                        const label = span.closest('.status-label');
+                        label.style.borderColor = (p.atual/p.max > 0.6) ? '#4caf50' : (p.atual/p.max > 0.3) ? '#ffeb3b' : '#f44336';
+                    }
+                }
+            });
+            renderizarLoja();
+            renderizarInventario();
+        }
+
+        function renderizarLoja(filtro = "") {
+            const container = document.getElementById('lista-loja');
+            container.innerHTML = "";
+            DB_ARMAS.filter(a => a.nome.toLowerCase().includes(filtro.toLowerCase())).forEach(arma => {
+                const div = document.createElement('div');
+                div.className = "item-loja-v";
+                div.innerHTML = `
+                    <div class="loja-info">
+                        <div class="tooltip"><strong>${arma.nome}</strong>
+                            <span class="tooltiptext">Dano: ${arma.dano}<br>${arma.hab}</span>
+                        </div>
+                        <span class="preco-tag">$${arma.preco}</span>
+                    </div>
+                    <button onclick="comprarItem('${arma.nome}')">Comprar</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function comprarItem(nomeArma) {
+            const arma = DB_ARMAS.find(a => a.nome === nomeArma);
+            if (dados.dinheiro >= arma.preco) {
+                dados.dinheiro -= arma.preco;
+                dados.armasCompradas.push({ ...arma, id: "arma-" + Date.now(), tipo: 'arma-rpg' });
+                salvar();
+                atualizarTela();
+            } else { alert("Sem saldo!"); }
+        }
+
+        function renderizarInventario() {
+            const sItens = document.getElementById('slots-itens');
+            const sArmas = document.getElementById('slots-armas');
+            sItens.innerHTML = ""; sArmas.innerHTML = "";
+
+            dados.inventario.forEach(item => sItens.appendChild(criarElemento(item, 'item-rpg')));
+            dados.armasCompradas.forEach(arma => sArmas.appendChild(criarElemento(arma, 'arma-rpg')));
+
+            document.querySelectorAll('.status-label').forEach(configurarArraste);
+        }
+
+        function criarElemento(item, classe) {
+            const div = document.createElement('div');
+            div.id = item.id;
+            div.className = `status-label ${classe}`;
+            
+            // Se for uma Arma de RPG e tiver atributos, cria com Tooltip embutido
+            if (classe === 'arma-rpg' && item.hab) {
+                div.innerHTML = `
+                    <div class="tooltip">${item.nome}
+                        <span class="tooltiptext">
+                            <strong>Dano:</strong> ${item.dano}<br>
+                            <strong>Efeito:</strong> ${item.hab}
+                        </span>
+                    </div>
+                    <span onclick="remover('${item.id}', '${classe}')" class="del-btn">✖</span>
+                `;
+            } else {
+                // Se for um item comum (sem atributos), cria normalmente
+                div.innerHTML = `${item.nome} <span onclick="remover('${item.id}', '${classe}')" class="del-btn">✖</span>`;
+            }
+            
+            return div;
+        }
+
+        function remover(id, classe) {
+            if (classe === 'arma-rpg') {
+                dados.armasCompradas = dados.armasCompradas.filter(a => a.id !== id);
+            } else {
+                dados.inventario = dados.inventario.filter(i => i.id !== id);
+            }
+            localStorage.removeItem(`pos_${id}_${usuarioLogado}`);
+            salvar();
+            atualizarTela();
+        }
+
+        function configurarArraste(label) {
+            if (label.classList.contains('mental')) return;
+
+            const pos = JSON.parse(localStorage.getItem(`pos_${label.id}_${usuarioLogado}`));
+            if (pos) { 
+                label.style.left = pos.x + 'px'; 
+                label.style.top = pos.y + 'px'; 
+                label.style.position = 'absolute';
+                document.getElementById('drop-zone').appendChild(label);
+            }
+
+            label.onmousedown = function(e) {
+                if (e.target.classList.contains('del-btn') || e.target.tagName === 'BUTTON') return;
+                const container = document.getElementById('drop-zone');
+                const rect = container.getBoundingClientRect();
+                let sX = e.clientX - label.getBoundingClientRect().left;
+                let sY = e.clientY - label.getBoundingClientRect().top;
+                label.style.position = 'absolute';
+                container.appendChild(label);
+                function move(ev) {
+                    label.style.left = (ev.clientX - rect.left - sX) + 'px';
+                    label.style.top = (ev.clientY - rect.top - sY) + 'px';
+                }
+                document.onmousemove = move;
+                document.onmouseup = function() {
+                    document.onmousemove = null;
+                    localStorage.setItem(`pos_${label.id}_${usuarioLogado}`, JSON.stringify({
+                        x: parseInt(label.style.left), y: parseInt(label.style.top)
+                    }));
+                };
+            };
+        }
+
+        function toggleSidebar(id) {
+            const sb = document.getElementById(id);
+            const aberta = sb.classList.contains('aberta');
+            document.querySelectorAll('.sidebar').forEach(s => s.classList.remove('aberta'));
+            if (!aberta) sb.classList.add('aberta');
+        }
+
+        function mudarAba(aba) {
+            document.getElementById('aba-itens').style.display = aba === 'itens' ? 'block' : 'none';
+            document.getElementById('aba-armas').style.display = aba === 'armas' ? 'block' : 'none';
+            document.getElementById('tab-itens').classList.toggle('active', aba === 'itens');
+            document.getElementById('tab-armas').classList.toggle('active', aba === 'armas');
+        }
+
+        function filtrarLoja() { renderizarLoja(document.getElementById('busca-loja').value); }
+        
+        // CORREÇÃO: Clamp (trava) para não bloquear curas que estourariam o máximo e não permitir HP negativo
+        function alterarVida(p, v) { 
+            let x = dados.vidaCorpo[p]; 
+            x.atual += v;
+            if (x.atual < 0) x.atual = 0;
+            if (x.atual > x.max) x.atual = x.max;
+            salvar(); 
+            atualizarTela(); 
+        }
+
+        function alterarMental(t, v) { 
+            let x = dados.statusMentais[t]; 
+            x.atual += v;
+            if (x.atual < 0) x.atual = 0;
+            if (x.atual > x.max) x.atual = x.max;
+            salvar(); 
+            atualizarTela(); 
+        }
+
+        function alterarDinheiro(s) { 
+            const q = parseInt(document.getElementById('input-qtd-dinheiro').value) || 0; 
+            if(dados.dinheiro + (q*s) >= 0) { 
+                dados.dinheiro += (q*s); 
+                salvar(); 
+                atualizarTela(); 
+            }
+        }
+
+        function adicionarItem() { 
+            const n = document.getElementById('novo-item-nome'); 
+            if(!n.value) return; 
+            dados.inventario.push({id: "it-"+Date.now(), nome: n.value, tipo: 'item-rpg'}); 
+            n.value = ""; 
+            salvar(); 
+            atualizarTela(); 
+        }
+
+        // CORREÇÃO: Usa getComputedStyle para funcionar perfeitamente desde o primeiro clique
+        function toggleCondicoes() { 
+            const list = document.getElementById('lista-condicoes'); 
+            const isHidden = window.getComputedStyle(list).display === 'none';
+            list.style.display = isHidden ? 'flex' : 'none'; 
+        }
+
+        // CORREÇÃO: Apaga apenas as posições do usuário atual para não atrapalhar outros saves
+        function resetarPosicoes() { 
+            Object.keys(localStorage).forEach(k => { 
+                if(k.startsWith('pos_') && k.endsWith('_' + usuarioLogado)) {
+                    localStorage.removeItem(k); 
+                }
+            }); 
+            location.reload(); 
+        }
+
+        function sair() { sessionStorage.clear(); window.location.href = 'index.html'; }
+
+        atualizarTela();
+    </script>
+</body>
+</html>

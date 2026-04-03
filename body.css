@@ -1,0 +1,286 @@
+/* ==========================================================================
+   1. Estilo Geral e Layout
+   ========================================================================== */
+body {
+    background-color: #0a0a0a;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+#main-content {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+/* ==========================================================================
+   2. Sidebars (Mochila e Loja)
+   ========================================================================== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    width: 300px;
+    height: 100vh;
+    background: #151515;
+    border: 1px solid #333;
+    z-index: 2000;
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    box-shadow: 0 0 30px rgba(0,0,0,0.7);
+}
+
+.sidebar-titulo {
+    color: #ffd700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.side-left { left: -300px; border-right: 3px solid #ffd700; }
+.side-right { right: -300px; border-left: 3px solid #ffd700; }
+
+.side-left.aberta { left: 0; }
+.side-right.aberta { right: 0; }
+
+/* Botões de Abrir Sidebars */
+.btn-sidebar-toggle {
+    position: fixed;
+    top: 20px;
+    z-index: 3000;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    border: 2px solid #000;
+    font-size: 24px;
+    cursor: pointer;
+    background: #ffd700;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.btn-sidebar-toggle:hover { transform: scale(1.1) rotate(5deg); }
+.btn-mochila { left: 20px; }
+.btn-loja { right: 20px; }
+
+/* ==========================================================================
+   3. Loja e Arsenal
+   ========================================================================== */
+.loja-lista-vertical { display: flex; flex-direction: column; gap: 12px; }
+
+.item-loja-v {
+    background: #202020;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.item-loja-v:hover { border-color: #ffd700; background: #252525; }
+
+.loja-info { display: flex; justify-content: space-between; align-items: center; }
+
+.item-loja-v button {
+    background: #ffd700;
+    color: #000;
+    border: none;
+    padding: 8px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.item-loja-v button:hover { background: #fff; }
+
+.preco-tag { color: #4caf50; font-family: 'Courier New', monospace; font-weight: bold; }
+
+/* ==========================================================================
+   4. Painel Financeiro e Abas
+   ========================================================================== */
+.painel-dinheiro {
+    background: #1a1a1a;
+    border: 2px solid #ffd700;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dinheiro-display { font-size: 32px; color: #ffd700; font-weight: bold; margin-bottom: 10px; }
+
+.dinheiro-controles { display: flex; gap: 10px; justify-content: center; align-items: center; }
+
+.dinheiro-controles input {
+    width: 80px;
+    padding: 8px;
+    background: #000;
+    border: 1px solid #444;
+    color: #ffd700;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.btn-ganhar { background: #2e7d32; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+.btn-gastar { background: #c62828; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+
+/* Abas */
+.tabs-inventario { display: flex; margin-bottom: 15px; background: #000; border-radius: 8px; padding: 4px; }
+.tabs-inventario button {
+    flex: 1;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.tabs-inventario button.active { background: #ffd700; color: #000; border-radius: 5px; font-weight: bold; }
+
+/* ==========================================================================
+   5. Personagem e Etiquetas (Boneco)
+   ========================================================================== */
+.char-container {
+    position: relative;
+    width: 320px;
+    height: 580px;
+    background: radial-gradient(circle, #222 0%, #111 100%);
+    border: 2px solid #333;
+    border-radius: 25px;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.body-image {
+    width: 90%;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.status-label {
+    position: absolute;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    border: 1px solid #ffd700;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #fff;
+    cursor: move;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    user-select: none;
+}
+
+.controls { display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: middle; }
+.controls button {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    line-height: 1;
+    background: #333;
+    color: #ffd700;
+    border: 1px solid #ffd700;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+/* Cores de Itens */
+.item-rpg { background: rgba(30, 70, 30, 0.9) !important; border-color: #4caf50 !important; }
+.arma-rpg { background: rgba(70, 30, 80, 0.9) !important; border-color: #9c27b0 !important; }
+.mental { border-style: double; border-width: 3px; }
+.condicao { border-color: #ff5722 !important; color: #ff5722; font-weight: bold; }
+
+/* ==========================================================================
+   6. Tooltips e Utilidades
+   ========================================================================== */
+.tooltip { position: relative; cursor: help; display: inline-block; }
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 220px; /* Um pouco mais largo para acomodar o texto das habilidades */
+    background-color: #111;
+    color: #fff;
+    text-align: left;
+    border: 1px solid #ffd700;
+    border-radius: 6px;
+    padding: 10px;
+    position: absolute;
+    z-index: 99999;
+    
+    /* Reposicionamento para evitar quebra de layout na loja */
+    bottom: 110%; 
+    left: 0;
+    
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    transform: translateY(10px);
+    font-size: 11px;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.9);
+    pointer-events: none; /* Garante que não bugue o Drag and Drop */
+}
+
+.tooltip:hover .tooltiptext { 
+    visibility: visible; 
+    opacity: 1; 
+    transform: translateY(0);
+}
+
+/* Quando o item estiver jogado no boneco no meio da tela, centraliza o tooltip */
+.char-container .tooltip .tooltiptext {
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+}
+.char-container .tooltip:hover .tooltiptext {
+    transform: translateX(-50%) translateY(0);
+}
+
+.grid-inventario {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.add-item-box { display: flex; gap: 5px; }
+.add-item-box input {
+    background: #000;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    flex: 1;
+}
+
+.del-btn { color: #ff4444; font-weight: bold; margin-left: 10px; cursor: pointer; }
+.del-btn:hover { color: #fff; }
+
+.sistema-controls { display: flex; gap: 10px; width: 100%; justify-content: center; }
+
+/* Esconder áreas por padrão */
+.conteudo-aba { display: none; }
+.conteudo-aba.active { display: block; }
