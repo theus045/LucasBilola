@@ -41,7 +41,7 @@ if (loginForm) {
                         pernaEsq: { atual: 10, max: 10 }
                     },
                     statusMentais: { 
-                        sanidade: { atual: 20, max: 20 }, 
+                        sanidade: { atual: 20, max: 40 }, 
                         stress: { atual: 0, max: 20 }, 
                         consciencia: { atual: 15, max: 15 } 
                     }
@@ -70,7 +70,7 @@ if (userLogado) {
             modificado = true; 
         }
         if (!dados.statusMentais) { 
-            dados.statusMentais = { sanidade:{atual:20, max:20}, stress:{atual:0, max:20}, consciencia:{atual:15, max:15} }; 
+            dados.statusMentais = { sanidade:{atual:20, max:40}, stress:{atual:0, max:20}, consciencia:{atual:15, max:15} }; 
             modificado = true; 
         }
         
