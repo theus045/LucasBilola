@@ -400,7 +400,7 @@
     let x = dados.statusMentais[t]; 
     x.atual += v;
     
-    if (x.atual < -50) x.atual = -50; // Trava o valor no -50
+    if (x.atual < -50) x.atual = zx.max;
     if (x.atual > x.max) x.atual = x.max;
     
     salvar(); 
